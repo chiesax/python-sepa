@@ -40,7 +40,9 @@ if __name__ == '__main__':
             for entry in statement['entries']:
                 for ed in entry['entry_details']:
                     for transaction in ed['transactions']:
-                        print(transaction['refs']['account_servicer_reference'],
+                        all_entries.append((transaction['refs']['account_servicer_reference'],
                               transaction['amount']['_value'], transaction['amount']['currency'], transaction['credit_debit_indicator'],
-                              entry['additional_information'], transaction['related_parties'])
+                              entry['additional_information'], transaction['related_parties'], entry['value_date']['date'], entry['booking_date']['date']))
 
+    s = sum([float(x[1]) for x in all_entries])
+    pass
