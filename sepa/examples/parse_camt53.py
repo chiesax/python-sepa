@@ -34,18 +34,13 @@ if __name__ == '__main__':
 
     camt_dict = parser.parse_string(parser.bank_to_customer_statement, bytes(strip_namespace(data_xml), 'utf8'))
 
-    statements = pd.DataFrame.from_dict(camt_dict['statements'])
     all_entries = []
-    for i,_ in statements.iterrows():
-        if 'entries' in camt_dict['statements'][i]:
-            df = pd.DataFrame()
-            dd = pd.DataFrame.from_records(camt_dict['statements'][i]['entries'])
-            df['Date'] = dd['value_date'].str['date']
-            df['Date'] = pd.to_datetime(df['Date']).dt.strftime('%Y-%m-%d')
-            iban = camt_dict['statements'][i]['account']['id']['iban']
-            df['IBAN'] = iban
-            df['Currency'] = dd['amount'].str['currency']
-            all_entries.append(df)
+    for statement in camt_dict['statements']:
+        if 'entries' in statement:
+            for entry in statement['entries']:
+                for ed in entry['entry_details']:
+                    for transaction in ed['transactions']:
+                        print(transaction['refs']['account_servicer_reference'],
+                              transaction['amount']['_value'], transaction['amount']['currency'], transaction['credit_debit_indicator'],
+                              entry['additional_information'], transaction['related_parties'])
 
-    df_entries = pd.concat(all_entries)
-    pass
