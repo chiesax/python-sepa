@@ -14,17 +14,17 @@ import dateutil.parser
 import_camt53 = os.path.join(IMPORT_CAMT53_FOLDER, 'CAMT053_040123.xml')
 
 if __name__ == '__main__':
-    history = None
+    history = {}
     if os.path.exists(IMPORT_HISTORY):
         with open(IMPORT_HISTORY, 'r') as f:
             history = json.load(f)
     first_import = None
     last_import = None
-    trans = None
+    old_trans = None
     if history:
         first_import = dateutil.parser.isoparse(history['from_to_dates'][0]['from'])
         last_import = dateutil.parser.isoparse(history['from_to_dates'][-1]['to'])
-        trans = pd.read_csv(TRANS_FILE)
+        old_trans = pd.read_csv(TRANS_FILE)
         shutil.copyfile(TRANS_FILE,
                         os.path.join(TRANS_FOLDER, 'trans_{}_{}.csv'.format(first_import.strftime('%y-%m-%d'),
                                                                             last_import.strftime('%y-%m-%d'))))
@@ -76,9 +76,9 @@ if __name__ == '__main__':
     if not abs(s - float(statement['transactions_summary']['total_entries']['sum'])) < 0.05:
         raise RuntimeError('Sum of transactions does not match transaction summary.')
 
-    new_trans = pd.DataFrame.from_records(statement_entries)
-    if trans:
-        trans = pd.concat([trans, new_trans])
+    trans = pd.DataFrame.from_records(statement_entries)
+    if old_trans:
+        trans = pd.concat([old_trans, trans])
     if not history:
         history['from_to_dates'] = []
     history['from_to_dates'].append(statement['from_to_date'])
