@@ -22,6 +22,8 @@ AUTOMOBILE = 'Automobile'
 CARTA_DI_CREDITO = 'Carta_di_credito'
 SPICCIOLI = 'Spiccioli'
 TRANSF_IPOTECA = get_category('Trasferimento', 'Ipoteca')
+ASSICURAZIONI = 'Assicurazioni'
+ATTIVITA = 'Attivita'
 
 
 simple_matching = {'HELSANA VERSICHERUNGEN AG': SALUTE,
@@ -30,6 +32,7 @@ simple_matching = {'HELSANA VERSICHERUNGEN AG': SALUTE,
                    'ASSURA': SALUTE,
                    'SWISSCOM': TELEFONO,
                    'DEPARTEMENT DES FINANCES': TASSE,
+                   'Etat de Neuchâtel': TASSE,
                    'Migros MMM Marin Cen': ALIMENTAZIONE,
                    'MCDONALDS': ALIMENTAZIONE,
                    'MC DONALD': ALIMENTAZIONE,
@@ -66,7 +69,15 @@ simple_matching = {'HELSANA VERSICHERUNGEN AG': SALUTE,
                    'Amavita': SALUTE,
                    'SOCAR': BENZINA,
                    'Migrol Sugiez': BENZINA,
-                   'Assura-Basis SA': SALUTE
+                   'Assura-Basis SA': SALUTE,
+                   'Zurich Versicherungsgesellschaft': ASSICURAZIONI,
+                   'Zurich Compagnie Assurance': ASSICURAZIONI,
+                   'Sun Store': SALUTE,
+                   'Football Club Hauterive': ATTIVITA,
+                   'CSS Kranken-Versicherung': SALUTE,
+                   'Swisscom (Schweiz) AG': TELEFONO,
+                   'Viteos SA': ENERGIA,
+                   'Sunrise Sagl': INTERNET
                    }
 
 if __name__ == '__main__':
@@ -75,7 +86,7 @@ if __name__ == '__main__':
     categories = []
     for index, row in trans.iterrows():
         cat = ''
-        if row['category'] != '':
+        if str(row['category']) != 'nan':
             categories.append(row['category'])
             continue
         info = row['additional_information']
