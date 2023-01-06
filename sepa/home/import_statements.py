@@ -11,7 +11,7 @@ import re
 import pandas as pd
 import dateutil.parser
 
-import_camt53 = os.path.join(IMPORT_CAMT53_FOLDER, 'CAMT053_040123.xml')
+import_camt53 = os.path.join(IMPORT_CAMT53_FOLDER, 'CAMT053_040123_full.xml')
 
 if __name__ == '__main__':
     history = {}
@@ -24,7 +24,7 @@ if __name__ == '__main__':
     if history:
         first_import = dateutil.parser.isoparse(history['from_to_dates'][0]['from'])
         last_import = dateutil.parser.isoparse(history['from_to_dates'][-1]['to'])
-        old_trans = pd.read_csv(TRANS_FILE)
+        old_trans = pd.read_csv(TRANS_FILE, sep='\t')
         shutil.copyfile(TRANS_FILE,
                         os.path.join(TRANS_FOLDER, 'trans_{}_{}.csv'.format(first_import.strftime('%y-%m-%d'),
                                                                             last_import.strftime('%y-%m-%d'))))
@@ -58,25 +58,30 @@ if __name__ == '__main__':
                                             'value': transaction['amount']['_value'],
                                             'currency': transaction['amount']['currency'],
                                             'credit_debit_indicator': transaction['credit_debit_indicator'],
-                                            'additional_information': ' '.join(*entry['additional_information']),
-                                            'related_parties': transaction['related_parties'],
+                                            'category': None,
+                                            'additional_information': '{} - {}'.format(entry['additional_information'],
+                                                                                       transaction['related_parties']['creditor']),
                                             'value_date': entry['value_date']['date'],
-                                            'booking_date': entry['booking_date']['date']})
+                                            'booking_date': entry['booking_date']['date'],
+                                                  'json': json.dumps({'transaction': transaction,
+                                                                      'entry': entry})})
                 else:
                     statement_entries.append({'ref': None,
                                         'value': entry['amount']['_value'],
                                         'currency': entry['amount']['currency'],
                                         'credit_debit_indicator': entry['credit_debit_indicator'],
-                                        'additional_information': ' '.join(*entry['additional_information']),
-                                        'related_parties': None,
+                                        'category': None,
+                                        'additional_information': entry['additional_information'],
                                         'value_date': entry['value_date']['date'],
-                                        'booking_date': entry['booking_date']['date']})
+                                        'booking_date': entry['booking_date']['date'],
+                                              'json': json.dumps({'entry': entry})})
 
     s = sum([float(x['value']) for x in statement_entries])
     if not abs(s - float(statement['transactions_summary']['total_entries']['sum'])) < 0.05:
         raise RuntimeError('Sum of transactions does not match transaction summary.')
 
-    trans = pd.DataFrame.from_records(statement_entries)
+    trans = pd.DataFrame.from_records(statement_entries, columns=['value_date', 'value', 'currency', 'credit_debit_indicator', 'category',
+                                                                 'additional_information', 'booking_date', 'json'])
     if old_trans:
         trans = pd.concat([old_trans, trans])
     if not history:
@@ -85,5 +90,5 @@ if __name__ == '__main__':
 
     with open(IMPORT_HISTORY, 'w') as f:
         json.dump(history, f)
-    trans.to_csv(TRANS_FILE)
+    trans.to_csv(TRANS_FILE, sep='\t')
 
