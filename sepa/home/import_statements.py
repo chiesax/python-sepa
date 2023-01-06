@@ -96,5 +96,5 @@ if __name__ == '__main__':
 
     with open(IMPORT_HISTORY, 'w') as f:
         json.dump(history, f)
-    trans.to_csv(TRANS_FILE, sep='\t')
+    trans.to_csv(TRANS_FILE, sep='\t', index=False)
 
