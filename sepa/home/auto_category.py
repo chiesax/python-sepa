@@ -64,7 +64,9 @@ simple_matching = {'HELSANA VERSICHERUNGEN AG': SALUTE,
                    'Shell': BENZINA,
                    'Pharmacie': SALUTE,
                    'Amavita': SALUTE,
-                   'SOCAR': BENZINA
+                   'SOCAR': BENZINA,
+                   'Migrol Sugiez': BENZINA,
+                   'Assura-Basis SA': SALUTE
                    }
 
 if __name__ == '__main__':
@@ -73,6 +75,9 @@ if __name__ == '__main__':
     categories = []
     for index, row in trans.iterrows():
         cat = ''
+        if row['category'] != '':
+            categories.append(row['category'])
+            continue
         info = row['additional_information']
         for k, v in simple_matching.items():
             if k in info:
