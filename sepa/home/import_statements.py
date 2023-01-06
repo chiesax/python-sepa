@@ -66,12 +66,18 @@ if __name__ == '__main__':
                                                   'json': json.dumps({'transaction': transaction,
                                                                       'entry': entry})})
                 else:
+                    cdi = ''
+                    if 'transactions' in ed:
+                        trans = ed['transactions'][0]
+                        if 'related_parties' in trans:
+                            cdi = ' - ' + str(trans['related_parties']['creditor'])
+
                     statement_entries.append({'ref': None,
                                         'value': entry['amount']['_value'],
                                         'currency': entry['amount']['currency'],
                                         'credit_debit_indicator': entry['credit_debit_indicator'],
                                         'category': None,
-                                        'additional_information': entry['additional_information'],
+                                        'additional_information': '{}{}'.format(entry['additional_information'], cdi),
                                         'value_date': entry['value_date']['date'],
                                         'booking_date': entry['booking_date']['date'],
                                               'json': json.dumps({'entry': entry})})
