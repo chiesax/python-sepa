@@ -4,7 +4,7 @@ from bs4 import BeautifulSoup
 import re
 
 if __name__ == '__main__':
-    with open('/home/samuele/PycharmProjects/python-sepa/sepa/examples/One_2022_01_08_pag1.html', 'r') as f:
+    with open('/home/samuele/PycharmProjects/python-sepa/sepa/examples/One_2022_01_09_pag1.html', 'r') as f:
         d = f.read()
     soup = BeautifulSoup(d, 'html.parser')
 
