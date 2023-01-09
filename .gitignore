@@ -8,5 +8,8 @@ __pycache__/
 *~
 
 *.pem
+*.html
+*.xml
 /sepa/examples/CAMT053_040123.xml
 /sepa/examples/One_2022_01_08_pag1.html
+/sepa/examples/One_2022_01_09_pag1.html
